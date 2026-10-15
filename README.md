@@ -25,6 +25,18 @@ npm run build
 
 `npm run check` roda os quatro em sequência.
 
+### Por que há um `@rolldown/binding-win32-x64-msvc` em `optionalDependencies`
+
+O Vitest 5 roda sobre rolldown, que carrega um binding nativo por plataforma. O
+npm tem um bug conhecido ([npm/cli#4828](https://github.com/npm/cli/issues/4828))
+em que o binding específico do Windows não entra no `node_modules`, e o Vitest
+não sobe com um erro de "Cannot find native binding".
+
+Declarar o binding em `optionalDependencies` resolve os dois lados: no Windows
+ele é instalado, e em Linux/CI o npm pula em silêncio em vez de abortar o
+`npm install` com `EBADPLATFORM` — que foi exatamente o que quebrou o primeiro
+build na Vercel quando ele estava em `devDependencies`.
+
 ## Onde estão os dados
 
 Tudo em `lib/acervo.ts`. É o arquivo espelho de `gemini-code-1792026163878.md`,
