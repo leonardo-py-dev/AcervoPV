@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+/*
+ * A caixa e o disco.
+ *
+ * A paleta é tinta de carimbo sobre papelão à noite: base quente e escura,
+ * vermelho de borracha, dourado de luz de festa. `carimbo` é gráfico puro e
+ * reprova em 4.5:1 sobre `breu` — nunca usar em texto. Para texto accent,
+ * existe `carimbo-texto`, que é o mesmo vermelho puxado para o claro.
+ *
+ * A cor de cada pessoa NÃO está aqui: é a cor do rótulo do disco dela, e
+ * mora em `lib/temas.ts`, junto com o texto que justifica o tema.
+ */
+@theme {
+  --color-breu: #17140f;
+  --color-breu-alto: #211d16;
+  --color-papel: #efe3ce;
+  --color-papel-2: #a99c86;
+  --color-carimbo: #b32017;
+  --color-carimbo-texto: #e4634f;
+  --color-lampiao: #e8b33c;
+}
+
+@theme inline {
+  --font-selo: var(--font-arquivo);
+  --font-prosa: var(--font-newsreader);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-breu);
+    color: var(--color-papel);
+    /* Grão de papelão: deve ser sentido, não visto. */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+    background-blend-mode: overlay;
+  }
+
+  /* Foco sempre visível: o dourado da lâmpada sobre o fundo escuro é 9.6:1. */
+  :focus-visible {
+    outline: 2px solid var(--color-lampiao);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background-color: var(--color-carimbo);
+    color: var(--color-papel);
+  }
+}
+
+@layer components {
+  /*
+   * As reflexões das pessoas. É o texto mais longo do site e o que mais importa:
+   * serif de ensaio, medida curta, entrelinha aberta.
+   */
+  .prosa {
+    font-family: var(--font-prosa);
+    font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+    line-height: 1.7;
+    max-width: 68ch;
+    text-wrap: pretty;
+  }
+
+  .prosa > p + p {
+    margin-top: 1.25em;
+  }
+
+  /* O divisor da caixa de disco: a etiqueta e o que está atrás dela. */
+  .divisor {
+    background-color: var(--color-breu-alto);
+    border: 1px solid color-mix(in oklab, var(--color-papel) 12%, transparent);
+    border-radius: 2px;
+  }
+}
+
+/*
+ * O disco é prensado uma vez, no carregamento. Os sulco giram devagar, porque
+ * um disco parado é só um círculo preto.
+ *
+ * São duas animações e não três de propósito: o texto do aro e o rótulo não
+ * giram (o texto girando fica ilegível metade do tempo), então só o grupo
+ * `.disco-gira` — estriados, brilho e runout — é animado.
+ */
+@keyframes prensar {
+  from {
+    transform: scale(1.12) rotate(var(--giro));
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    transform: scale(1) rotate(var(--giro));
+    opacity: 1;
+  }
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.disco {
+  animation: prensar 620ms cubic-bezier(0.2, 0.9, 0.3, 1) backwards;
+}
+
+.disco[data-giro="sim"] .disco-gira {
+  transform-box: fill-box;
+  transform-origin: center;
+  /* 33⅓ rpm reais dariam 33 voltas por minuto, que enjoa. Aqui é uma volta a
+     cada 26 s: dá para ler a peça no aro sem precisar parar de ler. */
+  animation: girar 26s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .disco {
+    animation: none;
+  }
+
+  .disco[data-giro="sim"] .disco-gira {
+    animation: none;
+  }
+}
