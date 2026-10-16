@@ -6,6 +6,9 @@ import { acervo, buscarFaixa, buscarPessoa } from "@/lib/acervo";
 import { slugificar, separarArtistas } from "@/lib/texto";
 import { urlBuscaLetra, urlYoutube } from "@/lib/youtube";
 
+/** Bloqueia por ler o próprio `params`. Ver `app/pessoa/[slug]/page.tsx`. */
+export const instant = false;
+
 export function generateStaticParams() {
   return acervo.faixas.map((entrada) => ({ id: entrada.faixa.id }));
 }

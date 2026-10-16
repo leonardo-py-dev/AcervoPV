@@ -6,6 +6,13 @@ import { LinhaFaixa } from "@/components/linha-faixa";
 import { anguloDoDisco, buscarPessoa, pessoas } from "@/lib/acervo";
 import { temaDe } from "@/lib/temas";
 
+/**
+ * A navegação para esta rota bloqueia, por desenho: ela lê o próprio `params`
+ * para saber de quem é a caixa. Sem isto o Cache Components reclama em dev de
+ * "URL data during prerendering" — e a reclamação está certa.
+ */
+export const instant = false;
+
 export function generateStaticParams() {
   return pessoas.map((pessoa) => ({ slug: pessoa.slug }));
 }

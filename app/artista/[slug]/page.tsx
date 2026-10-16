@@ -5,6 +5,9 @@ import { LinhaFaixa } from "@/components/linha-faixa";
 import { acervo, buscarArtista } from "@/lib/acervo";
 import type { EntradaDeFaixa, Pessoa } from "@/lib/tipos";
 
+/** Bloqueia por ler o próprio `params`. Ver `app/pessoa/[slug]/page.tsx`. */
+export const instant = false;
+
 export function generateStaticParams() {
   return acervo.artistas.map((artista) => ({ slug: artista.slug }));
 }
